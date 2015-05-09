@@ -21,7 +21,7 @@ public class Transcript {
 	public void addSentence(Sentence s) {
 		sentences.add(s);
 	}
-	
+	/*
 	public List<SentenceMapping> getMappedSentences(String languagePair) {
 		List<SentenceMapping> mappings = new ArrayList<SentenceMapping>(); 
 
@@ -31,7 +31,7 @@ public class Transcript {
 		
 		return mappings;
 	}
-	
+	*/
 	public List<Sentence> getSentences(String language) {
 		List<Sentence> sentences = new ArrayList<Sentence>();
 		List<String> words = new ArrayList<String>();
