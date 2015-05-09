@@ -13,6 +13,14 @@ public class Sentence {
 	private String source;
 	private List<String> words; 
 
+	public Sentence(){
+		words = new ArrayList<String>();
+	}
+	
+	public void addWord(String word) {
+		words.add(word);
+	}
+	
 	public List<String> getWords() {
 		return words;
 	}
@@ -41,4 +49,11 @@ public class Sentence {
 		this.source = source;
 	}
 	
+	public String toString() {
+		String result="";
+		for(String word:getWords()){
+			result+= word+" ";
+		}
+		return result;
+	}
 }
