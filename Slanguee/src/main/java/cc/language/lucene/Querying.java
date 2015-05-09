@@ -124,10 +124,11 @@ public class Querying {
 	 */
 	public static void main(String[] args) throws IOException, ParseException {
 		Querying querying = new Querying();
-		querying.loadIndex("./tmp");
-		ArrayList<QueryHit> findSimilar = querying.findSimilar("Is a test", "en");
+		querying.loadIndex("./tmp_de");
+		ArrayList<QueryHit> findSimilar = querying.findSimilar("Meine name ist", "de");
 		System.out.println(findSimilar.size());
-		System.out.println(findSimilar.get(0));
+		for(QueryHit qh : findSimilar)
+			System.out.println(qh);
 		
 	}
 

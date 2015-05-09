@@ -1,7 +1,9 @@
 package cc.languee.fileiteration;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -19,10 +21,7 @@ public class MovieTranscriptParser {
 
 	private Document xmlDocument = null;
 
-	public Movie parse(File sourceFile, String language) throws ParserConfigurationException, SAXException, IOException {
-		Pattern p = Pattern.compile("(\\d*)");
-		// TODO asign correct id according to matching pattern group 1
-		String movieId = sourceFile.getName();
+	public Movie parse(String movieId, InputStream sourceStream, String language) throws ParserConfigurationException, SAXException, IOException {
 		Movie movie = new Movie(movieId);
 		Transcript transcript;
 		transcript = new Transcript();
@@ -31,7 +30,7 @@ public class MovieTranscriptParser {
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 
-		xmlDocument = dBuilder.parse(sourceFile);
+		xmlDocument = dBuilder.parse(sourceStream);
 		xmlDocument.getDocumentElement().normalize();
 
 		NodeList sentenceNodes = xmlDocument.getElementsByTagName("s");
@@ -69,6 +68,14 @@ public class MovieTranscriptParser {
 		movie.addTranscript(transcript.getLanguage(), transcript);
 
 		return movie;
+	}
+	
+	public Movie parse(File sourceFile, String language) throws ParserConfigurationException, SAXException, IOException {
+		Pattern p = Pattern.compile("(\\d*)");
+		// TODO asign correct id according to matching pattern group 1
+		String movieId = sourceFile.getName();
+		InputStream inputStream = new FileInputStream(sourceFile);
+		return parse(movieId, inputStream, language);
 	}
 
 }
