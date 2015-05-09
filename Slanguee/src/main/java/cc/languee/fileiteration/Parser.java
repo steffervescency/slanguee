@@ -6,12 +6,18 @@ import java.util.List;
 
 public class Parser {
 
-	public List<Transcript> parse(String filepath) {
-		List<Transcript> movies = new ArrayList<Transcript>();
-		Transcript movie = new Transcript();
+	public List<Movie> parse(String filepath) {
+		List<Movie> movies = new ArrayList<Movie>();
 		
+		Movie m = new Movie();
+		Transcript transcript;
 		
-//		movie.addSentence(s);
+		transcript = new Transcript();
+		m.addTranscript("de", transcript);
+		transcript = new Transcript();
+		m.addTranscript("en", transcript);
+		
+		movies.add(m);
 		
 		return movies;
 	}
