@@ -19,7 +19,8 @@ public class MovieIterator implements Iterator<Movie> {
 	public MovieIterator(File directory, String language){
 		parser = new MovieTranscriptParser();
 		String[] extensions = new String[1];
-		extensions[0] = "xml.gz";
+		//extensions[0] = "xml.gz";
+		extensions[0] = "xml";
 		dictIter = FileUtils.iterateFiles(directory, extensions, true);
 		this.language = language;
 	}
@@ -30,6 +31,7 @@ public class MovieIterator implements Iterator<Movie> {
 	
 	public Movie next() {
 		File file = dictIter.next();
+		System.out.println(file);
 		Movie movie = null;
 		try {
 			movie = parser.parse(file, language);
