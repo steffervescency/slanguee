@@ -1,18 +1,17 @@
 /**
- * 
+ * A machinery to answer queries to reverted index
  */
 package cc.language.lucene;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
+import java.util.ArrayList;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.core.StopAnalyzer;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.core.SimpleAnalyzer;
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
-import org.apache.lucene.analysis.en.EnglishAnalyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.analysis.util.CharArraySet;
+import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
@@ -40,7 +39,6 @@ public class Querying {
 	private Directory index;
 	protected QueryParser parser;
 	private IndexReader indexReader;
-	private MoreLikeThis mlt;
 	private Version luceneVersion = Version.LUCENE_4_10_2;
 	protected Analyzer analyzer;
 	private String queryRecord = "sentence";
@@ -49,30 +47,45 @@ public class Querying {
 	
 	
 	public Querying(){
-		
-		analyzer = new WhitespaceAnalyzer(this.luceneVersion );
+		//analyzer = new WhitespaceAnalyzer(this.luceneVersion);
+		analyzer = new SimpleAnalyzer(this.luceneVersion);
 		parser = new QueryParser(this.luceneVersion, this.queryRecord, this.analyzer);
 	}
 	
 	
-	public ScoreDoc[] findSimilar(String phrase, String language) throws IOException, ParseException{
+	public ArrayList<QueryHit> findSimilar(String phrase, String language) throws IOException, ParseException{
 		return this.findSimilar(phrase, language, 0.10, 10);
 	}
+
 	
-	public ScoreDoc[] findSimilar(String phrase, String language, double threshold, int numberOfResults) throws IOException, ParseException{		 
+	public ArrayList<QueryHit> findSimilar(String phrase, String language, double threshold, int numberOfResults) throws IOException, ParseException{		 
 		Query query = this.createQuery(phrase);
 		System.out.println(query);
 		TopScoreDocCollector collector = TopScoreDocCollector.create(numberOfResults,true);
 		iSearcher.search(query, collector);
 		ScoreDoc[] hits = collector.topDocs().scoreDocs;
-		return hits;
+		ArrayList<QueryHit> result = new ArrayList<QueryHit>();
+		for(ScoreDoc hit : hits){
+			Document doc = this.iSearcher.doc(hit.doc);
+			QueryHit queryHit = new QueryHit(doc);
+			result.add(queryHit);
+		}
+		return result;
 	}
+
 	
-	private Query createQuery(String phrase) throws ParseException {
+	/**
+	 * Creating a query which takes order into account
+	 * @param phrase
+	 * @return
+	 * @throws ParseException
+	 * @throws IOException 
+	 */
+	private Query createQuery(String phrase) throws ParseException, IOException {
+		//TokenStream tokenStream = analyzer.tokenStream(this.queryRecord, phrase);
+		phrase = phrase.toLowerCase();
 		String[] tokens = phrase.split(" ");
-		assert(tokens.length > 0);
-		String token = tokens[0];
-		if(tokens.length == 1)
+		if(tokens.length <= 1)
 			return parser.parse(phrase);
 		else{
 			SpanNearQuery spanNearQuery = new SpanNearQuery(new SpanQuery[] {
@@ -91,26 +104,18 @@ public class Querying {
 		}
 	}
 
-
+	
+	/**
+	 * 
+	 * @param indexPath - a path to the created reverted index 
+	 * @throws IOException
+	 */
 	public void loadIndex(String indexPath) throws IOException{
 		index = FSDirectory.open(new File( indexPath ));
 		indexReader = DirectoryReader.open(index);
 		iSearcher   = new IndexSearcher(indexReader);
-		
-		mlt         = new MoreLikeThis(indexReader);
-		mlt.setAnalyzer(analyzer);
-		mlt.setFieldNames(new String[]{this.queryRecord});
-		//Search settings
-		//mlt.setBoost(true);
-		//mlt.setMinDocFreq(0);
-		//mlt.setMinTermFreq(0);
-		//mlt.setMinWordLen(1);
-		//mlt.setMaxNumTokensParsed(10000);
-		//mlt.setMaxQueryTerms(10000);
-		//mlt.setStopWords(MoreLikeThis.DEFAULT_STOP_WORDS);
 	}
-	
-	
+
 	
 	/**
 	 * @param args
@@ -120,9 +125,9 @@ public class Querying {
 	public static void main(String[] args) throws IOException, ParseException {
 		Querying querying = new Querying();
 		querying.loadIndex("./tmp");
-		ScoreDoc[] findSimilar = querying.findSimilar("is a test", "en");
-		System.out.println(findSimilar.length);
-		System.out.println(findSimilar[0]);
+		ArrayList<QueryHit> findSimilar = querying.findSimilar("Is a test", "en");
+		System.out.println(findSimilar.size());
+		System.out.println(findSimilar.get(0));
 		
 	}
 

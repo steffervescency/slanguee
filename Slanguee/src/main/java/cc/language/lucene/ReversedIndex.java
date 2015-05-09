@@ -11,6 +11,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.core.SimpleAnalyzer;
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -49,12 +50,13 @@ public class ReversedIndex {
 	@SuppressWarnings("deprecation")
 	public ReversedIndex() {
 		//analyzer = new EnglishAnalyzer(this.luceneVersion);
-		analyzer = new WhitespaceAnalyzer(this.luceneVersion);
+		//analyzer = new WhitespaceAnalyzer(this.luceneVersion);
+		analyzer = new SimpleAnalyzer(this.luceneVersion);
 		parser   = new QueryParser(this.luceneVersion, this.queryRecord, this.analyzer);
 	}
 	
 	/**
-	 * Creates a reversed index based on the senteces from the sentenceIterator
+	 * Creates a reversed index based on the sentences from the sentenceIterator
 	 * @param indexPath
 	 * @param language
 	 * @param sentenceIterator
@@ -74,7 +76,11 @@ public class ReversedIndex {
 		//	sentenceIterator.next();
 			Transcript transcript = new Transcript();
 			List<Sentence> sentences = transcript.getSentences();
-			Sentence sentence = sentences.get(0);
+			Sentence sentence = new Sentence();
+			sentence.addWord("This is a test");
+			sentence.setId("1");
+			sentence.setLanguage("en");
+			sentence.setSource("asd/asdasd/asdasd/");
 			addSentence(indexWriter, sentence);
 		//}
 	}
