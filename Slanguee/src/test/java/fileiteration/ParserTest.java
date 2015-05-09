@@ -2,13 +2,19 @@ package fileiteration;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.util.List;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.xml.sax.SAXException;
 
 import cc.languee.fileiteration.Movie;
 import cc.languee.fileiteration.Parser;
+import cc.languee.fileiteration.Sentence;
+import cc.languee.fileiteration.Transcript;
 
 
 public class ParserTest {
@@ -20,14 +26,21 @@ public class ParserTest {
 	}
 
 	@Test
-	public void testParse() {
-		String filepath = "";
-		List<Movie> movies = p.parse(filepath);
+	public void testParse() throws ParserConfigurationException, SAXException, IOException {
+		String filepath = "src/test/resources/xml/de/0/158515/5177953_1of1.xml";
+		Movie movie = p.parse(filepath, "de");
 
-		assertEquals(1, movies.size());
-		Movie movie = movies.get(0);
-		assertNotNull(movie.getTranscript("de"));
-		assertNotNull(movie.getTranscript("en"));
+		Transcript transcript = movie.getTranscript("de");
+		assertNotNull(transcript);
+		List<Sentence> sentences = transcript.getSentences();
+		
+		Sentence sentence = sentences.get(0);
+		assertEquals("2", sentence.getId());
+		assertEquals("Geheimnisvolle Musik ", sentence.toString());
+		sentence = transcript.getSentenceById("2");
+		assertEquals("Geheimnisvolle Musik ", sentence.toString());
+		sentence = transcript.getSentenceById("474"); // sentence divided by times
+		assertEquals("Wenn da was raschelt , weiß ich , ob das nicht die Wildsau ist ? ", sentence.toString());
 	}
 
 }

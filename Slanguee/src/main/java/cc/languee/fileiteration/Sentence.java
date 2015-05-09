@@ -9,20 +9,18 @@ public class Sentence {
 
 	private String language;
 	private String id;
-	private String timestamp; 
+//	private String timestamp; 
 	private String source;
 	private List<String> words; 
 
-	//private Sentence() {/* empty constructor */};
-
-	public Sentence(String language, String source, String id, String timestamp, List<String> words) {
-		this.language = language;
-		this.source = source;
-		this.id = id;
-		this.timestamp = timestamp;
-		this.words = words;
+	public Sentence(){
+		words = new ArrayList<String>();
 	}
-
+	
+	public void addWord(String word) {
+		words.add(word);
+	}
+	
 	public List<String> getWords() {
 		return words;
 	}
@@ -43,14 +41,6 @@ public class Sentence {
 		this.id = id;
 	}
 
-	public String getTimestamp() {
-		return timestamp;
-	}
-
-	public void setTimestamp(String timestamp) {
-		this.timestamp = timestamp;
-	}
-
 	public String getSource() {
 		return source;
 	}
@@ -59,4 +49,11 @@ public class Sentence {
 		this.source = source;
 	}
 	
+	public String toString() {
+		String result="";
+		for(String word:getWords()){
+			result+= word+" ";
+		}
+		return result;
+	}
 }

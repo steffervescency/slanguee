@@ -13,34 +13,31 @@ import java.util.Map;
 public class Transcript {
 	private String language;
 	private List<Sentence> sentences;
-	
+	private Map<String, Sentence> sentenceMap;
+
 	public Transcript() {
 		sentences = new ArrayList<Sentence>();
+		sentenceMap = new HashMap<String, Sentence>();
+	}
+
+	public void addSentence(Sentence sentence) {
+		sentences.add(sentence);
+		sentenceMap.put(sentence.getId(), sentence);
+	}
+
+	public List<Sentence> getSentences() {
+		return sentences;
+	}
+
+	public Sentence getSentenceById(String id) {
+		return sentenceMap.get(id);
 	}
 	
-	public void addSentence(Sentence s) {
-		sentences.add(s);
+	public void setLanguage(String language) {
+		this.language = language;
 	}
-	/*
-	public List<SentenceMapping> getMappedSentences(String languagePair) {
-		List<SentenceMapping> mappings = new ArrayList<SentenceMapping>(); 
 
-		SentenceMapping s = new SentenceMapping();
-		
-		mappings.add(s);
-		
-		return mappings;
-	}
-	*/
-	public List<Sentence> getSentences(String language) {
-		List<Sentence> sentences = new ArrayList<Sentence>();
-		List<String> words = new ArrayList<String>();
-		words.add("This");
-		words.add("is");
-		words.add("a");
-		words.add("test");
-		Sentence s = new Sentence(language, "<source>", "1", "00:00:01", words);
-		sentences.add(s);
-		return sentences;
+	public String getLanguage() {
+		return language;
 	}
 }
