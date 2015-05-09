@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import cc.languee.fileiteration.Movie;
 import cc.languee.fileiteration.MovieIterator;
+import cc.languee.fileiteration.Transcript;
 
 
 public class MovieIteratorTest {
@@ -24,7 +25,10 @@ public class MovieIteratorTest {
 	public void testNext() {
 		assertTrue(iter.hasNext());
 		Movie m = iter.next();
-		assertEquals("3476445", m.getId());
+		assertEquals("4720898_1of1.xml.gz", m.getId());
+		Transcript transcription = m.getTranscript("de");
+		assertEquals("12 JAHRE SPÄTER ", transcription.getSentenceById("1").toString());
+		
 	}
 
 }

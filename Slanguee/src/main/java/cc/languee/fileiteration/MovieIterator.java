@@ -1,8 +1,12 @@
 package cc.languee.fileiteration;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Iterator;
+import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.io.FileUtils;
 
@@ -29,10 +33,23 @@ public class MovieIterator implements Iterator<Movie> {
 	}
 	
 	public Movie next() {
-		File file = dictIter.next();
 		Movie movie = null;
+		
+		File file = dictIter.next();
+		
+		InputStream in = null;
 		try {
-			movie = parser.parse(file, language);
+			in = decompress(file);
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		try {
+			movie = parser.parse(file.getName(), in, language);
 		} catch (ParserConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -46,6 +63,10 @@ public class MovieIterator implements Iterator<Movie> {
 		return movie;
 	}
 	
+	private InputStream decompress(File file) throws FileNotFoundException, IOException {
+		return new GZIPInputStream(new FileInputStream(file));
+	}
+
 	public void remove() {
 		/* do nothing */
 	}
