@@ -37,6 +37,10 @@ public class ParserTest {
 		Sentence sentence = sentences.get(0);
 		assertEquals("2", sentence.getId());
 		assertEquals("Geheimnisvolle Musik ", sentence.toString());
+		sentence = transcript.getSentenceById("2");
+		assertEquals("Geheimnisvolle Musik ", sentence.toString());
+		sentence = transcript.getSentenceById("474"); // sentence divided by times
+		assertEquals("Wenn da was raschelt , weiß ich , ob das nicht die Wildsau ist ? ", sentence.toString());
 	}
 
 }
