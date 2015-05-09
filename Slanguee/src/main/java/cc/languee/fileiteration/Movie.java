@@ -8,9 +8,11 @@ import java.util.Set;
 
 public class Movie {
 	private Map<String, Transcript> transcripts;
+	private String id;
 
-	public Movie(){
+	public Movie(String id){
 		this.transcripts = new HashMap<String, Transcript>();
+		this.id = id;
 	}
 
 	public void addTranscript(String language, Transcript transcript){
@@ -19,6 +21,10 @@ public class Movie {
 
 	public Transcript getTranscript(String language){
 		return transcripts.get(language);
+	}
+
+	public String getId() {
+		return id;
 	}
 
 }

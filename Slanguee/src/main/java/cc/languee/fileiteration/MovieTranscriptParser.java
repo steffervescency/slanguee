@@ -2,10 +2,7 @@ package cc.languee.fileiteration;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -18,22 +15,23 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 
-public class Parser {
+public class MovieTranscriptParser {
 
 	private Document xmlDocument = null;
 
-	public Movie parse(String filepath, String language) throws ParserConfigurationException, SAXException, IOException {
-
-		Movie movie = new Movie();
+	public Movie parse(File sourceFile, String language) throws ParserConfigurationException, SAXException, IOException {
+		Pattern p = Pattern.compile("(\\d*)");
+		// TODO asign correct id according to matching pattern group 1
+		String movieId = sourceFile.getName();
+		Movie movie = new Movie(movieId);
 		Transcript transcript;
 		transcript = new Transcript();
 		transcript.setLanguage(language);
 
-		File xmlFile = new File(filepath);
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 
-		xmlDocument = dBuilder.parse(xmlFile);
+		xmlDocument = dBuilder.parse(sourceFile);
 		xmlDocument.getDocumentElement().normalize();
 
 		NodeList sentenceNodes = xmlDocument.getElementsByTagName("s");
@@ -47,8 +45,8 @@ public class Parser {
 				Sentence sentence = new Sentence();
 
 				Element sentenceElement = (Element) node;
-				String id = sentenceElement.getAttribute("id");
-				sentence.setId(id);
+				String sentenceId = sentenceElement.getAttribute("id");
+				sentence.setId(sentenceId);
 
 				NodeList childNodes = node.getChildNodes();
 				for (int simNodeIndex = 0; simNodeIndex < childNodes.getLength(); simNodeIndex++) {
@@ -73,8 +71,4 @@ public class Parser {
 		return movie;
 	}
 
-	public Movie next() {
-
-		return null;
-	}
 }
