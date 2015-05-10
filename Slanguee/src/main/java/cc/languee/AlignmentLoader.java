@@ -16,6 +16,7 @@ import java.sql.Statement;
 public class AlignmentLoader {
 	
 	Connection conn;
+	Statement stmt;
 	
 	// add a file to the mysql database
 	// TODO: should check if it's already there to avoid duplicates
@@ -32,22 +33,18 @@ public class AlignmentLoader {
 	}
 	
 	private int executeQueryWithLastId(String query) throws SQLException {
-		Statement stmt = conn.createStatement();
 		stmt.executeUpdate(query);
 		query = "SELECT LAST_INSERT_ID() AS last_id FROM file;";
 		ResultSet rs = stmt.executeQuery(query);
 		rs.next();
 		String lastid = rs.getString("last_id");
-		stmt.close();
 		return Integer.parseInt(lastid);
 	}
 	
 	private void addAlignment(int file_map_id, int line_1, int line_2) throws SQLException {
-		Statement stmt = conn.createStatement();
 		String query = "INSERT INTO alignment(file_map_id, line_1, line_2) VALUES(" + file_map_id +
 				", " + line_1 + "," + line_2 + ")";
-		stmt.executeUpdate(query);
-		stmt.close();
+		stmt.addBatch(query);
 	}
 	
 	
@@ -57,6 +54,7 @@ public class AlignmentLoader {
 		    conn =
 		       DriverManager.getConnection("jdbc:mysql://localhost/ibelieveispider?" +
 		                                   "user=spider&password=itssausagetome");
+		    stmt = conn.createStatement();
 
 		} catch (SQLException ex) {
 		    // handle any errors
@@ -79,6 +77,7 @@ public class AlignmentLoader {
 			for(AlignmentParser.LineAlignment line : alignment.lines) {
 				addAlignment(file_map_id, line.line_1, line.line_2);
 			}
+			stmt.executeBatch();
 		}
 	}
 	
