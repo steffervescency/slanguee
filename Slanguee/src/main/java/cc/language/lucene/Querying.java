@@ -63,7 +63,7 @@ public class Querying {
 	
 	public ArrayList<QueryHit> findSimilar(String phrase, String language, double threshold, int numberOfResults) throws IOException, ParseException{		 
 		Query query = this.createQuery(phrase);
-		System.out.println(query);
+		//System.out.println(query);
 		TopScoreDocCollector collector = TopScoreDocCollector.create(numberOfResults,true);
 		iSearcher.search(query, collector);
 		ScoreDoc[] hits = collector.topDocs().scoreDocs;

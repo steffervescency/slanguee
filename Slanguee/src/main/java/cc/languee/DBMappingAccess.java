@@ -43,7 +43,7 @@ public class DBMappingAccess {
 	public String getFileNameMapping(String originFilename, String originLang, String targetLang) {
 
 		// TODO implement;
-		return "5156735_lof1.xml";
+		return "5156735_1of1.xml";
 	}
 
 	public ArrayList<Integer> getLineNumberMapping(String originFileName, int originLineNumber, String originLang, String targetLang) {
