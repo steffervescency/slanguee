@@ -1,5 +1,5 @@
 /**
- * Creates a reversed index and allows for quering it
+ * Creates a reversed index and allows for querying it
  */
 package cc.language.lucene;
 
@@ -11,6 +11,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.core.SimpleAnalyzer;
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -30,6 +31,8 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 
+import cc.languee.fileiteration.Movie;
+import cc.languee.fileiteration.MovieIterator;
 import cc.languee.fileiteration.Sentence;
 import cc.languee.fileiteration.Transcript;
 
@@ -49,41 +52,71 @@ public class ReversedIndex {
 	@SuppressWarnings("deprecation")
 	public ReversedIndex() {
 		//analyzer = new EnglishAnalyzer(this.luceneVersion);
-		analyzer = new WhitespaceAnalyzer(this.luceneVersion);
+		//analyzer = new WhitespaceAnalyzer(this.luceneVersion);
+		analyzer = new SimpleAnalyzer(this.luceneVersion);
 		parser   = new QueryParser(this.luceneVersion, this.queryRecord, this.analyzer);
 	}
 	
 	/**
-	 * Creates a reversed index based on the senteces from the sentenceIterator
+	 * Creates a reversed index based on the sentences from the sentenceIterator
 	 * @param indexPath
 	 * @param language
 	 * @param sentenceIterator
 	 * @throws IOException
 	 */
-	public void createIndex(String indexPath, String language, Iterator sentenceIterator) throws IOException{
+	public void createIndex(String indexPath, String language, MovieIterator movieIterator) throws IOException{
 		index = FSDirectory.open(new File(indexPath));
 		IndexWriterConfig config = new IndexWriterConfig(this.luceneVersion, this.analyzer);
 		IndexWriter indexWriter = new IndexWriter(index, config);
-		this.addSentences(indexWriter, language, sentenceIterator);
+		this.addSentences(indexWriter, language, movieIterator);
 		indexWriter.close();
 	}
 	
 	
-	private void addSentences(IndexWriter indexWriter, String language, Iterator sentenceIterator) throws IOException {
-		//for(;sentenceIterator.hasNext();){
-		//	sentenceIterator.next();
-			Transcript transcript = new Transcript();
+	private void addSentences(IndexWriter indexWriter, String language, MovieIterator movieIterator) throws IOException {
+		for(;movieIterator.hasNext();){
+			Movie movie;
+			try {
+				movie = movieIterator.next();
+			} catch (Exception e) {
+				// TODO: handle exception
+				//TODO: fix it
+				e.printStackTrace();
+				continue;
+			}
+			if(movie == null)
+				continue;
+			String src = movie.getId();
+			Transcript transcript = movie.getTranscript(language);
+			if(transcript == null)
+				continue;
 			List<Sentence> sentences = transcript.getSentences();
-			Sentence sentence = sentences.get(0);
-			addSentence(indexWriter, sentence);
-		//}
+			for(Sentence sentence : sentences){
+				if(sentence == null)
+					continue;
+			    //sentenceIterator.next();
+				/*Transcript transcript = new Transcript();
+				List<Sentence> sentences = transcript.getSentences();
+				Sentence sentence = new Sentence();
+				sentence.addWord("This is a test");
+				sentence.setId("1");
+				sentence.setLanguage("en");
+				sentence.setSource("asd/asdasd/asdasd/");*/
+				addSentence(indexWriter, sentence, language, src);				
+			}
+
+		}
 	}
 	
-	private void addSentence(IndexWriter indexWriter, Sentence sentence) throws IOException{
+	private void addSentence(IndexWriter indexWriter, Sentence sentence, String lang, String src) throws IOException{
 		  Document doc = new Document();
 		  String sentenceId = sentence.getId();
 		  String language = sentence.getLanguage();
+		  if(language == null)
+			  language = lang;
 		  String source = sentence.getSource();
+		  if(source == null)
+			  source = src;
 		  String words = StringUtils.join(sentence.getWords()," ");
 
 		  doc.add(new StringField("sentenceId", sentenceId, Field.Store.YES));
@@ -91,7 +124,6 @@ public class ReversedIndex {
 		  doc.add(new StringField("source", source, Field.Store.YES));
 		  doc.add(new Field("sentence", words,
 				  Field.Store.YES, Field.Index.ANALYZED, Field.TermVector.WITH_POSITIONS_OFFSETS));
-		  System.out.println(doc);
 		  indexWriter.addDocument(doc);
 	}
 	
@@ -101,9 +133,17 @@ public class ReversedIndex {
 	 * @throws IOException 
 	 */
 	public static void main(String[] args) throws IOException {
+		//String subtitlesDirectoryPath = "/home/adam/workspace/Slanguee2/data/subtitles/OpenSubtitles2013/xml/de";
+		String subtitlesDirectoryPath = "/home/adam/workspace/Slanguee2/data/subtitles/en/OpenSubtitles2013/xml/en";
+		//String indexDir = "./tmp_de";
+		String indexDir = "./tmp_en";
+		File subtitlesDirectory = new File(subtitlesDirectoryPath);
+		//String language = "de";
+		String language = "en";
+		MovieIterator movieIterator = new MovieIterator(subtitlesDirectory, language);
 		ReversedIndex index = new ReversedIndex();
-		FileUtils.deleteDirectory(new File("./tmp"));
-		index.createIndex("./tmp/", "en", null);
+		FileUtils.deleteDirectory(new File(indexDir));
+		index.createIndex(indexDir, language, movieIterator);
 	}
 
 }

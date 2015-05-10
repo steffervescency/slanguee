@@ -13,6 +13,7 @@ import org.apache.commons.io.FileUtils;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 
 public class MovieIterator implements Iterator<Movie> {
@@ -23,7 +24,8 @@ public class MovieIterator implements Iterator<Movie> {
 	public MovieIterator(File directory, String language){
 		parser = new MovieTranscriptParser();
 		String[] extensions = new String[1];
-		extensions[0] = "xml.gz";
+		//extensions[0] = "xml.gz";
+		extensions[0] = "xml";
 		dictIter = FileUtils.iterateFiles(directory, extensions, true);
 		this.language = language;
 	}
@@ -34,12 +36,13 @@ public class MovieIterator implements Iterator<Movie> {
 	
 	public Movie next() {
 		Movie movie = null;
-		
 		File file = dictIter.next();
+		System.out.println(file);
 		
 		InputStream in = null;
 		try {
-			in = decompress(file);
+			in = new FileInputStream(file);
+			//in = decompress(file);
 		} catch (FileNotFoundException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -56,7 +59,8 @@ public class MovieIterator implements Iterator<Movie> {
 		} catch (SAXException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IOException e) {
+			
+		}catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
