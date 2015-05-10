@@ -16,8 +16,10 @@ import cc.language.lucene.Querying;
  *
  */
 public class Translate {
-    private String englishIndexPath = "./tmp_en";
-    private String germanIndexPath = "./tmp_de";
+    //private String englishIndexPath = "./tmp_en";
+    //private String germanIndexPath = "./tmp_de";
+    private String englishIndexPath = SlangueePreferences.englishIndexPath;
+    private String germanIndexPath = SlangueePreferences.germanIndexPath;
 	
     private Querying englishIndex;
     private Querying germanIndex;
@@ -84,7 +86,7 @@ public class Translate {
 	 */
 	public static void main(String[] args) throws Exception {
 		Translate translator = new Translate();
-		List<PairQueryHit> giveTranslation = translator.giveTranslation("Ich verstehe nur", "de", "en");
+		List<PairQueryHit> giveTranslation = translator.giveTranslation("Ich verstehe", "de", "en");
 		for(PairQueryHit qh : giveTranslation){
 			System.out.println(qh);
 			System.out.println("##############");

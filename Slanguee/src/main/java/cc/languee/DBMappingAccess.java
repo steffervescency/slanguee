@@ -49,6 +49,7 @@ public class DBMappingAccess {
 	public ArrayList<Integer> getLineNumberMapping(String originFileName, int originLineNumber, String originLang, String targetLang) {
 		ArrayList<Integer> lines = new ArrayList<Integer>();
 		lines.add(704);
+		lines.add(705);
 		return lines;
 	}
 }

@@ -47,6 +47,7 @@ public class Querying {
 	private String queryRecord = "sentence";
 	//maximal allowed length between tokens in the result
 	private int maxLenBetweenTokens = 2;
+	private int numberOfResults = 10;
 	
 	
 	public Querying(){
@@ -57,7 +58,7 @@ public class Querying {
 	
 	
 	public ArrayList<QueryHit> findSimilar(String phrase, String language) throws IOException, ParseException{
-		return this.findSimilar(phrase, language, 0.10, 10);
+		return this.findSimilar(phrase, language, 0.10, this.numberOfResults);
 	}
 
 	
@@ -118,8 +119,16 @@ public class Querying {
 		indexReader = DirectoryReader.open(index);
 		iSearcher   = new IndexSearcher(indexReader);
 	}
+
 	
-	
+	/**
+	 * Returning specific sentence giving source file and line number
+	 * @param language
+	 * @param filename
+	 * @param lineNumber
+	 * @return
+	 * @throws IOException
+	 */
 	public QueryHit findSentenceBySourceAndLine(String language, String filename, String lineNumber) throws IOException{
 		BooleanQuery booleanQuery = new BooleanQuery();
 		TermQuery lineField = new TermQuery(new Term("sentenceId" , lineNumber));
