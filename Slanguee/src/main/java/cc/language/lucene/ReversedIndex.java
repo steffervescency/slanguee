@@ -1,5 +1,5 @@
 /**
- * Creates a reversed index and allows for quering it
+ * Creates a reversed index and allows for querying it
  */
 package cc.language.lucene;
 
@@ -75,11 +75,25 @@ public class ReversedIndex {
 	
 	private void addSentences(IndexWriter indexWriter, String language, MovieIterator movieIterator) throws IOException {
 		for(;movieIterator.hasNext();){
-			Movie movie = movieIterator.next();
+			Movie movie;
+			try {
+				movie = movieIterator.next();
+			} catch (Exception e) {
+				// TODO: handle exception
+				//TODO: fix it
+				e.printStackTrace();
+				continue;
+			}
+			if(movie == null)
+				continue;
 			String src = movie.getId();
 			Transcript transcript = movie.getTranscript(language);
+			if(transcript == null)
+				continue;
 			List<Sentence> sentences = transcript.getSentences();
 			for(Sentence sentence : sentences){
+				if(sentence == null)
+					continue;
 			    //sentenceIterator.next();
 				/*Transcript transcript = new Transcript();
 				List<Sentence> sentences = transcript.getSentences();
