@@ -3,6 +3,7 @@ package cc.languee;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class DBMappingAccess {
 
@@ -42,10 +43,12 @@ public class DBMappingAccess {
 	public String getFileNameMapping(String originFilename, String originLang, String targetLang) {
 
 		// TODO implement;
-		return null;
+		return "5156735_lof1.xml";
 	}
 
-	public int getLineNumberMapping(String originFileName, int originLineNumber, String originLang, String targetLang) {
-		return 0;
+	public ArrayList<Integer> getLineNumberMapping(String originFileName, int originLineNumber, String originLang, String targetLang) {
+		ArrayList<Integer> lines = new ArrayList<Integer>();
+		lines.add(704);
+		return lines;
 	}
 }
