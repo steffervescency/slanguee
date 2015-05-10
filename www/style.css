@@ -1,0 +1,43 @@
+.search-container {
+  padding: 20px 0px;
+  text-align: center;
+  background-color: white;
+}
+.search-container .row {
+    padding-top: 10px;
+}
+.query {
+    text-align: left;
+    padding-top: 70px;
+    padding-bottom: 15px;
+    font-weight: bold;
+}
+.results-table th {
+    text-align: center;
+    font-size: 18px;
+}
+.results-table td {
+    text-align: left;
+}
+.highlight {
+    background-color: #FFFF99;
+    font-weight: normal;
+}
+h1 {
+    text-align: center;
+    padding-bottom: 15px;
+    padding-top: 10px;
+}
+.search-btn {
+    width: 60px;
+}
+.right-arrow-container .glyphicon {
+    top: 6px;
+}
+.pagination {
+    word-spacing: 5px;
+    font-weight: bold;
+}
+.pagination a {
+    font-weight: normal;
+}
