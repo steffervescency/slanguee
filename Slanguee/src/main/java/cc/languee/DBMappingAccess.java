@@ -13,7 +13,7 @@ public class DBMappingAccess {
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			this.connect = DriverManager.getConnection("jdbc:mysql://localhost/ibelieveispider?" + "user=root&password=tgekWo8G");
+			this.connect = DriverManager.getConnection("jdbc:mysql://localhost/ibelieveispider?" + "user=spider&password=spiderpw");
 
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
