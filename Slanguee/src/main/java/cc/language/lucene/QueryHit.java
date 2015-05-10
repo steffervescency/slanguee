@@ -69,7 +69,7 @@ public class QueryHit {
 	}
 	
 	public String toString(){
-		return this.words + this.source + this.id + this.language;
+		return this.words + " " + this.source + " " + this.id + " " + this.language;
 	}
 
 	

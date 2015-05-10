@@ -18,9 +18,12 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.queries.mlt.MoreLikeThis;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.BooleanClause.Occur;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.search.spans.SpanNearQuery;
 import org.apache.lucene.search.spans.SpanQuery;
@@ -115,6 +118,24 @@ public class Querying {
 		indexReader = DirectoryReader.open(index);
 		iSearcher   = new IndexSearcher(indexReader);
 	}
+	
+	
+	public QueryHit findSentenceBySourceAndLine(String language, String filename, String lineNumber) throws IOException{
+		BooleanQuery booleanQuery = new BooleanQuery();
+		TermQuery lineField = new TermQuery(new Term("sentenceId" , lineNumber));
+		TermQuery sourceField = new TermQuery(new Term("source" , filename));
+		booleanQuery.add(lineField, Occur.MUST);
+		booleanQuery.add(sourceField, Occur.MUST);
+		TopScoreDocCollector collector = TopScoreDocCollector.create(1,true);
+		iSearcher.search(booleanQuery, collector);
+		ScoreDoc[] hits = collector.topDocs().scoreDocs;
+		if(hits.length == 0)
+			return null;
+		else{
+			Document doc = this.iSearcher.doc(hits[0].doc);
+			return new QueryHit(doc);
+		}
+	}
 
 	
 	/**
@@ -124,11 +145,16 @@ public class Querying {
 	 */
 	public static void main(String[] args) throws IOException, ParseException {
 		Querying querying = new Querying();
-		querying.loadIndex("./tmp_en_copy");
-		ArrayList<QueryHit> findSimilar = querying.findSimilar("it is great", "en");
+		querying.loadIndex("./tmp_en");
+		ArrayList<QueryHit> findSimilar = querying.findSimilar("it is raining cats", "en");
 		System.out.println(findSimilar.size());
 		for(QueryHit qh : findSimilar)
 			System.out.println(qh);
+		System.out.println("---");
+		QueryHit findSentenceBySourceAndLine = querying.findSentenceBySourceAndLine("en", "5156735_1of1.xml", "704");
+		System.out.println(findSentenceBySourceAndLine);
+		findSentenceBySourceAndLine = querying.findSentenceBySourceAndLine("en", "5156735_1of1.xml", "705");
+		System.out.println(findSentenceBySourceAndLine);
 		
 	}
 
